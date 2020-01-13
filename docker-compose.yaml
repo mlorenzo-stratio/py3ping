@@ -3,7 +3,7 @@ services:
   app:
     build:
       context: .
-    image: pyping:local
+    image: py3ping:local
     tty: true
     stdin_open: true
     volumes:
