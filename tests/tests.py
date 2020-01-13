@@ -1,15 +1,15 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # coding: utf-8
 
 """
     python-ping unittests
     ~~~~~~~~~~~~~~~~~~~~~
-    
+
     Note that ICMP messages can only be send from processes running as root.
     So you must run this tests also as root, e.g.:
-    
+
         .../python-ping$ sudo python tests.py
-    
+
     :homepage: https://github.com/jedie/python-ping/
     :copyleft: 1989-2011 by the python-ping team, see AUTHORS for more details.
     :license: GNU GPL v2, see LICENSE for more details.
@@ -17,9 +17,10 @@
 
 import socket
 import unittest
+from py3ping import Ping, is_valid_ip4_address, to_ip
 
-from pyping import Ping, is_valid_ip4_address, to_ip
-
+# pylint: disable-msg=missing-docstring,invalid-name,too-many-arguments,protected-access
+# pylint: disable-msg=unused-argument
 
 class PingTest(Ping):
     """
@@ -82,7 +83,7 @@ class TestPythonPing(unittest.TestCase):
 
     def test_do_one_ping(self):
         p = PingTest("www.google.com")
-        p.do()
+        p._do()
         self.assertEqual(p.send_count, 1)
         self.assertEqual(p.receive_count, 1)
 
@@ -127,4 +128,3 @@ class TestPythonPing(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-

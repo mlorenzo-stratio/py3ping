@@ -1,0 +1,113 @@
+#!/usr/bin/env python3
+"""
+Py3Ping
+  A pure python ping implementation using raw sockets.
+"""
+
+import sys
+import getopt
+from clint.textui import indent, puts
+from py3ping import ping
+
+DEBUG = False
+
+def _usage():
+    with indent(1, quote=' '):
+        puts('Usage: pyping [destination] [options]')
+        print()
+        puts('Options')
+        with indent(2, quote=' '):
+            puts('--timeout, -t     Set timeout in ms (Default: 1000)')
+            puts('--size, -s        Set package size in data bytes (Default: 55)')
+            puts('--count, -c       Set ping count (Default: 3)')
+            puts('--udp             Send ping via Udp (no-root needed)')
+        print()
+    sys.exit(0)
+
+if __name__ == '__main__':
+    try:
+        OPTS, ARGS = getopt.gnu_getopt(sys.argv[1:], 'c:t:s:h', ['count=', 'timeout=', 'size=', 'help', 'udp'])
+    except getopt.GetoptError as err:
+        print(err)
+        _usage()
+
+    if not ARGS:
+        _usage()
+
+    if len(ARGS) >= 2:
+        print('Conflict between: %s.' % ', '.join(ARGS))
+        _usage()
+
+    FLAGS = {}
+    for flag_group in OPTS:
+        FLAGS[flag_group[0]] = list(flag_group[1:])
+
+    # Default values
+    UDP = False
+    TIMEOUT = 1000
+    COUNT = 3
+    PACKET_SIZE = 55
+
+    ### Parse
+    # Udp
+    if '--udp' in FLAGS.keys():
+        UDP = True
+
+    # Timeout
+    if '--timeout' in FLAGS.keys():
+        if FLAGS['--timeout']:
+            try:
+                TIMEOUT = int(FLAGS['--timeout'][0])
+            except ValueError:
+                print(' Error: --timeout must be integer')
+                _usage()
+    if '-t' in FLAGS.keys():
+        if FLAGS['-t']:
+            try:
+                TIMEOUT = int(FLAGS['-t'][0])
+            except ValueError:
+                print(' Error: -t must be integer')
+                _usage()
+
+    # Count
+    if '--count' in FLAGS.keys():
+        if FLAGS['--count']:
+            try:
+                COUNT = int(FLAGS['--count'][0])
+            except ValueError:
+                print(' Error: --count must be integer')
+                _usage()
+    if '-c' in FLAGS.keys():
+        if FLAGS['-c']:
+            try:
+                COUNT = int(FLAGS['-c'][0])
+            except ValueError:
+                print(' Error: -c must be integer')
+                _usage()
+    # Packet size
+    if '--size' in FLAGS.keys():
+        if FLAGS['--size']:
+            try:
+                PACKET_SIZE = int(FLAGS['--size'][0])
+            except ValueError:
+                print(' Error: --size must be integer')
+                _usage()
+    if '-s' in FLAGS.keys():
+        if FLAGS['-s']:
+            try:
+                PACKET_SIZE = int(FLAGS['-s'][0])
+            except ValueError:
+                print(' Error: -s must be integer')
+                _usage()
+
+    DESTINATION = ARGS[0]
+
+    if DEBUG:
+        print(FLAGS)
+        print(OPTS)
+        print(ARGS)
+        print(TIMEOUT)
+        print(UDP)
+
+    ping(DESTINATION, timeout=TIMEOUT, packet_size=PACKET_SIZE, count=COUNT, \
+    	quiet_output=False, udp=UDP)
